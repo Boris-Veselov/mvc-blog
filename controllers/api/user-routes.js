@@ -47,33 +47,57 @@ router.post('/', (req, res) => {
     username: req.body.username,
     password: req.body.password
   })
-  .then(dbUserData => res.json(dbUserData))
+  .then(dbUserData => {
+    req.session.save(() => {
+      req.session.user_id = dbUserData.id;
+      req.session.username = dbUserData.username;
+      req.session.logginIn = true;
+
+      res.json(dbUserData)
+    })
+  })    
   .catch(err => {
     res.status(500).json(err);
   });
 });
 
 //login route
- router.post('/login', (req, res) => {
-   User.findOne({
-     where: {
-       username: req.body.username
-     }
-   })
-   .then(dbUserData => {
-     //verify user
-     if(!dbUserData) {
-       res.status(400).json({ message: 'Username not Found' });
-       return;
-     }
-     const validPassword = dbUserData.checkPassword(req.body.password);
-     if (!validPassword) {
-       res.status(400).json({ message: 'Incorrect Password' });
-       return;
-     }
-     res.json({user: dbUserData, message: 'You are now logged in!' });
-   })
- })
+router.post('/login', (req, res) => {
+  User.findOne({
+    where: {
+      username: req.body.username
+    }
+  })
+  .then(dbUserData => {
+    //verify user
+    if(!dbUserData) {
+      res.status(400).json({ message: 'Username not Found' });
+      return;
+    }
+    const validPassword = dbUserData.checkPassword(req.body.password);
+    if (!validPassword) {
+      res.status(400).json({ message: 'Incorrect Password' });
+      return;
+    }
+    req.session.save(() => {
+      req.session.user_id = dbUserData.id;
+      req.session.username = dbUserData.username;
+      req.session.logginIn = true;
+      res.json({user: dbUserData, message: 'You are now logged in!' });
+    });
+  });
+});
+
+//logout route
+router.post('/logout', (req, res) => {
+  if (req.session.logginIn) {
+    req.session.destroy(() => {
+      res.status(204).end();
+    })
+  } else {
+    res.status(404).end();
+  }
+});
 
 //update a user by id number
 router.put('/:id', (req, res) => {
