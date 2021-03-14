@@ -3,7 +3,7 @@
     <a href="/post/{{id}}">{{title}}</a>    
   </div>
   <div class="meta">
-    {{user.username}} on {{format_date created_at}}
+    Posted By {{user.username}} on {{format_date created_at}}
     |
     <a href="/post/{{id}}">{{comments.length}} {{format_plural "comment" comments.length}}</a>
   </div>
