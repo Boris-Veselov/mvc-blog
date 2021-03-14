@@ -4,7 +4,7 @@ const { User } = require('../../models');
 // Get All users
 router.get('/', (req, res) => {
   User.findAll({
-
+    attributes: { exclude: ['password'] }
   })
   .then(dbUserData => res.json(dbUserData))
   .catch(err => {
@@ -15,6 +15,7 @@ router.get('/', (req, res) => {
 // Get a single user by id number
 router.get('/:id', (req, res) => {
   User.findOne({
+    attributes: { exclude: ['password'] },
     where: {
       id: req.params.id
     }
@@ -42,9 +43,32 @@ router.post('/', (req, res) => {
   });
 });
 
+//login route
+ router.post('/login', (req, res) => {
+   User.findOne({
+     where: {
+       username: req.body.username
+     }
+   })
+   .then(dbUserData => {
+     //verify user
+     if(!dbUserData) {
+       res.status(400).json({ message: 'Username not Found' });
+       return;
+     }
+     const validPassword = dbUserData.checkPassword(req.body.password);
+     if (!validPassword) {
+       res.status(400).json({ message: 'Incorrect Password' });
+       return;
+     }
+     res.json({user: dbUserData, message: 'You are now logged in!' });
+   })
+ })
+
 //update a user by id number
 router.put('/:id', (req, res) => {
   User.update(req.body, {
+    individualHooks: true,
     where: {
       id: req.params.id
     }
