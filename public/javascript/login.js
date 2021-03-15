@@ -16,7 +16,9 @@ async function signupFormHandler(event) {
 
     //check if the response status
     if (response.ok) {
-      console.log('success')
+      console.log('success');
+      alert('New user created you can now log in');
+      document.location.reload();
     } else {
       alert(response.statusText);
     }
