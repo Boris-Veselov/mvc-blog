@@ -11,7 +11,7 @@ MVC Tech Blog
 * [Installation](#installation)
 * [Usage](#usage)
 * [Contribution](#contribution)
-* [license](#license)
+* [License](#license)
 * [Contact](#contact)
 
 ## Description
@@ -64,6 +64,10 @@ No installation is needed as the app is deployed on heroku
 ## Contribution
 
 Boris Veselov
+
+## License
+  
+MIT license
 
 ## Contact
 
